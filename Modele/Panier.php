@@ -1,5 +1,4 @@
 <?php
-require_once 'Modele/Modele.php';
 
 class Panier {
     
@@ -13,6 +12,7 @@ class Panier {
     }
     
     public function ajouterArticle($articleId, $quantite) {
+        echo "Ajouter au panier";
         if(isset($this->items[$articleId])) {
             $this->items[$articleId] += $quantite;
         } else {
@@ -31,12 +31,16 @@ class Panier {
         $this->sauvegarderPanier();
     }
     
-    public function getArticles() {
+    public function obtenirPanier() {
         return $this->items;
     }
+    
+/*     public function ajouterAuPanier($articleId) {
+        $this->ajouterArticle($articleId, 1);
+    } */
     
     private function sauvegarderPanier() {
         setcookie($this->cookieName, serialize($this->items), time() + (86400 * 30), "/");
     }
 }
-    ?>
+?>

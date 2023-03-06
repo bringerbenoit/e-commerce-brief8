@@ -1,46 +1,70 @@
 <?php
-require_once 'Modele/Cookie.php';
+require_once 'Modele/Modele.php';
+require_once 'Modele/Panier.php';
+require_once 'Modele/Produit.php';
+
 
 class ControleurPanier {
 
-    public function afficherPanier() {
-        // Créer une instance de la classe "Panier"
-        $panier = new Panier();
+    private $panier;
+    //private $commentaire;
 
-        // Récupérer les articles du panier
-        $articles = $panier->getArticles();
-
-        // Afficher la vue du panier en passant les articles en paramètre
-        include('vues/VuePanier.php');
-    }
- 
-    public function ajouterArticle() {
-        // Récupérer les données du formulaire d'ajout d'article
-        $articleId = $_POST['article_id'];
-        $quantite = $_POST['quantite'];
-
-        // Ajouter l'article au panier
-        $panier = new Panier();
-        $panier->ajouterArticle($articleId, $quantite);
-
+    public function __construct() {
+        $this->panier = new Panier();
+        /*$this->commentaire = new Commentaire(); */
     }
 
-    public function retirerArticle() {
-        // Récupérer l'ID de l'article à retirer
-        $articleId = $_GET['article_id'];
+    // Affiche les détails sur un produit
+    public function getPanier() {
+        $panier = $this->panier->obtenirPanier();
+        $data = [];
+        if(!empty($panier)){
+            
+            foreach ($panier as $key => $value) {
+               // echo "{$key} => {$value} "; //$key est l'identifiant de l'instrument et $value est la quantité
+                
+                // créer une instanciation de la class Produit du produit.php
+                $this->produit = new Produit();
+                $produit = $this->produit->getProduit($key);
+                array_push($data, $produit);
+            }           
+        }
+        $vue = new Vue("Panier");
 
-        // Retirer l'article du panier
-        $panier = new Panier();
-        $panier->retirerArticle($articleId);
-
+        $vue->generer(array('panier' => $panier, 'data' => $data));
 
     }
-
-    public function viderPanier() {
-        // Vider le panier
-        $panier = new Panier();
-        $panier->viderPanier();
+    public function ajouterPanier($id){
+        //lancer une méthode de la classe Panier qui permet d'ajouter un instrument dans la panier
+        $panier = $this->panier->ajouterArticle($id , 1);
+        $this->getPanier();
 
 
     }
+       
+    // Retirer un instrument du panier
+    public function supprimerArticle($id){
+        $this->panier->retirerArticle($id);  
+        $this->getPanier();          
+    }
+
 }
+
+
+/* if(isset($_GET['action'])) {
+    switch($_GET['action']) {
+        case 'ajouter':
+            if(isset($_GET['id'])) {
+                $panier->ajouterAuPanier($_GET['id']);
+            }
+            break;
+        case 'retirer':
+            if(isset($_GET['id'])) {
+                $panier->retirerArticle($_GET['id']);
+            }
+            break;
+        case 'vider':
+            $panier->viderPanier();
+            break;
+    }
+} */

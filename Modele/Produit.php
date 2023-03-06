@@ -26,7 +26,7 @@ class Produit extends Modele {
      * @throws Exception Si l'identifiant du billet est inconnu
      */
     public function getProduit($idproduit) {
-        $sql = 'select * from produit';
+        $sql = 'select * from produit where id_produit =?';
         $produit = $this->executerRequete($sql, array($idproduit));
         if ($produit->rowCount() > 0)
             return $produit->fetch();  // Accès à la première ligne de résultat

@@ -22,28 +22,48 @@ class Routeur {
     
     public function routerRequete() {
         try {
-            if (!isset($_GET['action'])) {
-               
-              $this->ctrlAccueil->accueil();
+            if (isset($_GET['action'])) {               
 
-            }
-            else
-
-            if ($_GET['action'] == 'produit') {
-                $idProduit = intval($this->getParametre($_GET, 'id'));
-                if ($idProduit != 0) {
-                    $this->ctrlProduit->produit($idProduit);
+                if ($_GET['action'] == 'produit') {
+                    $idProduit = intval($this->getParametre($_GET, 'id'));
+                    if ($idProduit != 0) {
+                        $this->ctrlProduit->produit($idProduit);
+                    }
+                    else {
+                        throw new Exception("Identifiant de produit non valide");
+                    }
                 }
-                else {
-                    throw new Exception("Identifiant de produit non valide");
+                elseif(($_GET['action'] == 'panier') ) {
+
+                    if (isset($_GET['id'])) {// index.php?action=panier&id=1
+
+                        $id= intval($_GET['id']);  
+                        $this->ctrlPanier->ajouterPanier($id);          
+                    }
+                    else {
+                        $this->ctrlPanier->getPanier();
+                    }
+                    
+
+                }
+                elseif(($_GET['action'] == 'supprProduitPanier')){
+                    if (isset($_GET['id'])) {// index.php?action=panier&id=1
+
+                        $id= intval($_GET['id']);  
+                        $this->ctrlPanier->supprimerArticle($id);          
+                    }
+                    else {
+                        throw new Exception("Aucun Produit à supprimer");
+                    }
                 }
             }
-
+            else {
+                $this->ctrlAccueil->accueil();
+            }
         }
         catch (Exception $e) {
             $this->erreur($e->getMessage());
         }
- 
     }
 
     // Affiche une erreur
